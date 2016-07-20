@@ -42,30 +42,6 @@ fi
 CEPH_OPTS="--cluster ${CLUSTER}"
 MOUNT_OPTS="-t xfs -o noatime,inode64"
 
-if [ ${NETWORK_AUTO_DETECT} -ne 0 ]; then
-  sleep 10;
-  if command -v ip; then
-    if [ ${NETWORK_AUTO_DETECT} -eq 1 ]; then
-      MON_IP=$(ip -6 -o a | grep scope.global | awk '/eth/ { sub ("/..", "", $4); print $4 }' | head -n1)
-      if [ -z "$MON_IP" ]; then
-        MON_IP=$(ip -4 -o a | awk '/eth/ { sub ("/..", "", $4); print $4 }')
-        CEPH_PUBLIC_NETWORK=$(ip r | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/[0-9]\{1,2\}' | head -1)
-      fi
-    elif [ ${NETWORK_AUTO_DETECT} -eq 4 ]; then
-      MON_IP=$(ip -4 -o a | awk '/eth/ { sub ("/..", "", $4); print $4 }')
-      CEPH_PUBLIC_NETWORK=$(ip r | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/[0-9]\{1,2\}' | head -1)
-    elif [ ${NETWORK_AUTO_DETECT} -eq 6 ]; then
-      MON_IP=$(ip -6 -o a | grep scope.global | awk '/eth/ { sub ("/..", "", $4); print $4 }' | head -n1)
-      CEPH_PUBLIC_NETWORK=$(ip r | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/[0-9]\{1,2\}' | head -1)
-    fi
-  # best effort, only works with ipv4
-  else
-    MON_IP=$(grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' /proc/net/fib_trie | grep -vEw "^127|255$|0$" | head -1)
-    CEPH_PUBLIC_NETWORK=$(grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/[0-9]\{1,2\}' /proc/net/fib_trie | grep -vE "^127|^0" | head -1)
-  fi
-fi
-
-
 ####################
 # COMMON FUNCTIONS #
 ####################
@@ -181,8 +157,8 @@ function start_mon {
     exit 1
   fi
 
+  sleep 10;
   if [ ${NETWORK_AUTO_DETECT} -ne 0 ]; then
-    sleep 10;
     if command -v ip; then
       if [ ${NETWORK_AUTO_DETECT} -eq 1 ]; then
         MON_IP=$(ip -6 -o a | grep scope.global | awk '/eth/ { sub ("/..", "", $4); print $4 }' | head -n1)
