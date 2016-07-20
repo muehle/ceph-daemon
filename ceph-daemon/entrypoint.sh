@@ -159,6 +159,7 @@ function start_mon {
   fi
 
   if [ ${NETWORK_AUTO_DETECT} -ne 0 ]; then
+    sleep 10;
     if command -v ip; then
       if [ ${NETWORK_AUTO_DETECT} -eq 1 ]; then
         MON_IP=$(ip -6 -o a | grep scope.global | awk '/eth/ { sub ("/..", "", $4); print $4 }' | head -n1)
