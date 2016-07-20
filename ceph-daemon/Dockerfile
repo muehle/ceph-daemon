@@ -20,6 +20,7 @@ RUN chmod +x /sbin/my_init && \
 
 # Add bootstrap script, ceph defaults key/values for KV store
 ADD entrypoint.sh config.*.sh ceph.defaults /
+RUN chmod +x /entrypoint.sh
 
 # Add volumes for Ceph config and data
 VOLUME ["/etc/ceph","/var/lib/ceph"]
