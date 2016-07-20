@@ -27,4 +27,3 @@ VOLUME ["/etc/ceph","/var/lib/ceph"]
 # Execute the entrypoint
 WORKDIR /
 ENTRYPOINT ["/entrypoint.sh"]
-Contact GitHub API Training Shop Blog About
